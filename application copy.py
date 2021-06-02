@@ -113,10 +113,13 @@ def main():
 
             # TODO: make this shit faster
             if True:
-                pred = classes[np.argmax(model.predict(current_img)[0])]
-                print(pred)
-                cv2.putText(current_window, 'Prediction: %s' %
-                            (pred), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
+                time_elapsed = time.time() - prev
+                if time_elapsed > 1./10:
+                    prev = time.time()
+                    pred = classes[np.argmax(model.predict(current_img)[0])]
+                    print(pred)
+                    cv2.putText(current_window, 'Prediction: %s' %
+                                (pred), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
 
             # use below for demoing purposes
             #cv2.putText(window, 'Prediction: %s' % (pred), (x0,y0-25), font, 1.0, (255,0,0), 2, 1)
