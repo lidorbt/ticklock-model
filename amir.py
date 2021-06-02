@@ -50,6 +50,8 @@ def predictImage():
                 (pred), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
 
 def main():
+    gpu = tf.config.experimental.list_physical_devices('GPU')
+    tf.config.experimental.set_memory_growth(gpu[0], True)
     global font, size, fx, fy, fh
     global takingData, dataColor
     global className, count
