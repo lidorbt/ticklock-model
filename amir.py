@@ -25,6 +25,7 @@ current_pred = classes[0]
 current_img = None
 current_window = None
 model = load_model('model_folder')
+prev = time.time()
 
 def initClass(name):
     global className, count
