@@ -9,6 +9,10 @@ import copy
 import schedule
 import cv2
 import time 
+import tensorflow as tf
+
+gpu = tf.config.experimental.list_physical_devices('GPU')
+tf.config.experimental.set_memory_growth(gpu[-1], True)
 
 classes = ['NONE', 'alef', 'ayin', 'bet', 'dalet', 'gimel', 'hei', 'het',
         'khaf', 'kof', 'lamed', 'mem', 'nun', 'peh', 'reish', 'samech',
@@ -50,8 +54,6 @@ def predictImage():
                 (pred), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
 
 def main():
-    gpu = tf.config.experimental.list_physical_devices('GPU')
-    tf.config.experimental.set_memory_growth(gpu[0], True)
     global font, size, fx, fy, fh
     global takingData, dataColor
     global className, count
