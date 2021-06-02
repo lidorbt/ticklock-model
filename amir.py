@@ -118,7 +118,7 @@ def main():
                 time_elapsed = time.time() - prev
                 images.append(current_img)
 
-                if time_elapsed > 1./10:
+                if time_elapsed > 10:
                     prev = time.time()
                     pred = np.argmax(np.bincount(np.array([prediction.argmax() for prediction in model.predict(np.array(images))])))
                     print(classes[pred])
