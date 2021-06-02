@@ -67,7 +67,7 @@ def main():
     cam.set(cv2.CAP_PROP_FPS, 5)
     cv2.namedWindow('Original', cv2.WINDOW_NORMAL)
     
-    schedule.every(2).seconds.do(predictImage)
+    # schedule.every(2).seconds.do(predictImage)
 
     while True:
         schedule.run_pending()
