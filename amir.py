@@ -120,10 +120,10 @@ def main():
 
                 if time_elapsed > 1./10:
                     prev = time.time()
-                    pred = round(np.average(np.array([classes[prediction.argmax()] for prediction in model.predict(images)]).astype(np.float)), 1)
-                    print(pred)
+                    pred = np.argmax(np.bincount(np.array([prediction.argmax() for prediction in model.predict(images)])))
+                    print(classes[pred])
                     cv2.putText(current_window, 'Prediction: %s' %
-                                (pred), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
+                                (classes[pred]), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
                     images = []
 
             # use below for demoing purposes
