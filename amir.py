@@ -25,7 +25,6 @@ current_pred = classes[0]
 current_img = None
 current_window = None
 model = load_model('model_folder')
-prev = time.time()
 
 def initClass(name):
     global className, count
@@ -67,6 +66,7 @@ def main():
     cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
     cam.set(cv2.CAP_PROP_FPS, 5)
     cv2.namedWindow('Original', cv2.WINDOW_NORMAL)
+    prev = time.time()
     
     # schedule.every(2).seconds.do(predictImage)
 
