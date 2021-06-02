@@ -62,11 +62,12 @@ def main():
     x0, y0, width = 120, 120, 300
 
     cam = cv2.VideoCapture(0)
-    cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-    cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
-    cam.set(cv2.CAP_PROP_FPS, 5)
+    # cam.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+    # cam.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+    # cam.set(cv2.CAP_PROP_FPS, 5)
     cv2.namedWindow('Original', cv2.WINDOW_NORMAL)
     prev = time.time()
+    images = []
     
     # schedule.every(2).seconds.do(predictImage)
 
@@ -109,18 +110,21 @@ def main():
         else:
             # img = np.float32(roi)/255
             current_img = roi
-            current_img = np.expand_dims(current_img, axis=0)
+            # current_img = np.expand_dims(current_img, axis=0)
             current_img = np.expand_dims(current_img, axis=-1)
 
             # TODO: make this shit faster
             if True:
                 time_elapsed = time.time() - prev
+                images.append(current_img)
+
                 if time_elapsed > 1./10:
                     prev = time.time()
-                    pred = classes[np.argmax(model.predict(current_img)[0])]
+                    pred = round(np.average(np.array([classes[prediction.argmax()] for prediction in model.predict(images)]).astype(np.float)), 1)
                     print(pred)
                     cv2.putText(current_window, 'Prediction: %s' %
                                 (pred), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
+                    images = []
 
             # use below for demoing purposes
             #cv2.putText(window, 'Prediction: %s' % (pred), (x0,y0-25), font, 1.0, (255,0,0), 2, 1)
