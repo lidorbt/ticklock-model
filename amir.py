@@ -28,7 +28,7 @@ showMask = 0
 current_pred = classes[0]
 current_img = None
 current_window = None
-model = load_model('model_folder')
+model = load_model('model_2021_06_07_8_30')
 
 def initClass(name):
     global className, count
