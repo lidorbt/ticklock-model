@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# export LD_PRELOAD=/usr/lib/aarch64-linux-gnu/libgomp.so.1
+os.environ["LD_PRELOAD"] = "/usr/lib/aarch64-linux-gnu/libgomp.so.1"
 # python3 application.py
 import os
 from keras.models import load_model
