@@ -1,0 +1,4 @@
+numpy
+schedule
+opencv-python
+tensorflow
