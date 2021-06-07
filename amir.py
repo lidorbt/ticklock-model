@@ -2,6 +2,9 @@
 
 # python3 application.py
 import os
+
+os.environ["LD_PRELOAD"] = "/usr/lib/aarch64-linux-gnu/libgomp.so.1"
+
 from keras.models import load_model
 import numpy as np
 import copy
@@ -10,10 +13,8 @@ import cv2
 import time 
 import tensorflow as tf
 
-os.environ["LD_PRELOAD"] = "/usr/lib/aarch64-linux-gnu/libgomp.so.1"
-
 gpu = tf.config.experimental.list_physical_devices('GPU')
-tf.config.experimental.set_memory_growth(gpu[-1], True)
+# tf.config.experimental.set_memory_growth(gpu[-1], True)
 
 classes = ['NONE', 'alef', 'ayin', 'bet', 'dalet', 'gimel', 'hei', 'het',
        'kafyad', 'khaf', 'kof', 'lamed', 'mem', 'nun', 'peh', 'reish',
@@ -133,7 +134,7 @@ def main():
                     images = []
 
             # use below for demoing purposes
-            cv2.putText(current_window, 'Prediction: %s' % (pred), (x0,y0-25), font, 1.0, (255,0,0), 2, 1)
+            cv2.putText(current_window, 'Prediction: %s' % (current_pred), (x0,y0-25), font, 1.0, (255,0,0), 2, 1)
 
         # show the window
         cv2.imshow('Original', current_window)
@@ -198,6 +199,8 @@ def main():
             initClass('tav')
         elif key == ord('q'):
             initClass('NONE')
+        elif key == ord('5'):
+            initClass('kafyad')
 
     cam.release()
 
