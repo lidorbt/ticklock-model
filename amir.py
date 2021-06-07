@@ -15,8 +15,8 @@ gpu = tf.config.experimental.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(gpu[-1], True)
 
 classes = ['NONE', 'alef', 'ayin', 'bet', 'dalet', 'gimel', 'hei', 'het',
-        'khaf', 'kof', 'lamed', 'mem', 'nun', 'peh', 'reish', 'samech',
-       'shin', 'tav', 'tet', 'tzadi', 'vav', 'yod', 'zayin']
+       'kafyad', 'khaf', 'kof', 'lamed', 'mem', 'nun', 'peh', 'reish',
+       'samech', 'shin', 'tav', 'tet', 'tzadi', 'vav', 'yod', 'zayin']
        
 dataColor = (0, 255, 0)
 font = cv2.FONT_HERSHEY_SIMPLEX
@@ -48,6 +48,7 @@ def binaryMask(img):
 
 def predictImage():
     print(time.time())
+    print(current_img.shape)
     pred = classes[np.argmax(model.predict(current_img)[0])]
     print(pred)
     cv2.putText(current_window, 'Prediction: %s' %
@@ -122,7 +123,7 @@ def main():
                 time_elapsed = time.time() - prev
                 images.append(current_img)
 
-                if time_elapsed > 10:
+                if time_elapsed > 1:
                     prev = time.time()
                     pred = np.argmax(np.bincount(np.array([prediction.argmax() for prediction in model.predict(np.array(current_img))])))
                     print(classes[pred])
@@ -131,7 +132,7 @@ def main():
                     images = []
 
             # use below for demoing purposes
-            #cv2.putText(window, 'Prediction: %s' % (pred), (x0,y0-25), font, 1.0, (255,0,0), 2, 1)
+            cv2.putText(current_window, 'Prediction: %s' % (pred), (x0,y0-25), font, 1.0, (255,0,0), 2, 1)
 
         # show the window
         cv2.imshow('Original', current_window)
