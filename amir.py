@@ -127,7 +127,9 @@ def main():
 
                 if time_elapsed > 1:
                     prev = time.time()
-                    pred = np.argmax(np.bincount(np.array([prediction.argmax() for prediction in model.predict(np.array(current_img))])))
+                    predictions = np.array([prediction.argmax() for prediction in model.predict(np.array(images))])
+                    print([classes[pred] for pred in predictions])
+                    pred = np.argmax(np.bincount(predictions))
                     print(classes[pred])
                     cv2.putText(current_window, 'Prediction: %s' %
                                 (classes[pred]), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
