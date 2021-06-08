@@ -96,7 +96,7 @@ def main():
         ),
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
-    parser.add_argument("-p", "--port", default=5000, help="port to run server on")
+    parser.add_argument("-p", "--port", default=80, help="port to run server on")
     parser.add_argument("-host", "--host", default='0.0.0.0', help="host to run server on (use 0.0.0.0 to allow access from other hosts)")
     parser.add_argument("--debug", action="store_true", help="debug the server")
     parser.add_argument("--version", action="store_true", help="print version and exit")
