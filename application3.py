@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-''' Written by jared.vasquez@yale.edu '''
 
 from keras.models import load_model
 import matplotlib.pyplot as plt

@@ -7,9 +7,6 @@ import Jetson.GPIO as GPIO
 
 # GPIO.cleanup()
 
-
-prev = time.time()
-
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(18, GPIO.OUT)
 GPIO.output(18, GPIO.LOW)
