@@ -10,7 +10,9 @@ import time
 import Jetson.GPIO as GPIO
 import tensorflow as tf
 import requests
-import threading
+from datetime import datetime
+import atexit
+
 
 gpu = tf.config.experimental.list_physical_devices('GPU')
 tf.config.experimental.set_memory_growth(gpu[-1], True)
@@ -57,11 +59,29 @@ current_window = None
 model = load_model('models/model_30')
 chars_amount = 2
 pred_interval = 5
+isUnlocked = False
 
 server_api = 'https://us-central1-tiklock-36d87.cloudfunctions.net/api/'
 lock_id = '5xDVhyuHpxM36WlNkxaa'
+headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
+ip = requests.get('https://api.ipify.org').text
+
+# connectivity
 password = requests.get(server_api + lock_id).text
+
+def onExit():
+    global ip
+    global headers 
+    global lock_id
+
+    print(f'disabled ip: {ip}')
+
+    disable_active_stats_api = 'disableLock'
+    disable_active_payload = f'id={lock_id}'
+    response_disable_active = requests.post(f'{server_api}{disable_active_stats_api}', headers=headers, data=disable_active_payload)
+    
+    print(response_disable_active.text)
 
 def binaryMask(img):
     img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -80,12 +100,23 @@ def predictImage():
     cv2.putText(current_window, 'Prediction: %s' %
                 (pred), (fx, fy+2*fh), font, 1.0, (245, 210, 65), 2, 1)
 
+
 def openLock():
+    global isUnlocked
+
+    if isUnlocked:
+        return
+
+    isUnlocked = True 
+
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(18, GPIO.OUT)
     GPIO.output(18, GPIO.LOW)
     time.sleep(5)
     GPIO.cleanup()
+
+    isUnlocked = False
+
 
 def try_unlock(unlock_letters):
     heb_unlock_letters = [letters[x][0] for x in unlock_letters]
@@ -93,6 +124,8 @@ def try_unlock(unlock_letters):
     return unlock_word == password
 
 print('The password is: ', password)
+
+atexit.register(onExit)
 
 def main():
     global font, size, fx, fy, fh
@@ -102,8 +135,15 @@ def main():
     global current_window
     global current_img
     global model
+    global headers
+    global ip
+    global lock_id
 
-    unlock_thread = threading.Thread(target=openLock)
+
+    active_stats_api = 'enableLock'
+    active_payload = f'id={lock_id}&ip={ip}'
+    response_active = requests.post(f'{server_api}{active_stats_api}', headers=headers, data=active_payload)
+    print(response_active.text)
 
     x0, y0, width = 120, 120, 300
 
@@ -147,12 +187,21 @@ def main():
             prev = time.time()
 
             # current_pred = classes[np.argmax(model.predict(current_img)[0])]
-            predictions = np.array([prediction.argmax() for prediction in model.predict(np.array(images[-chars_amount:]))])
+            y = model.predict(np.array(images[-chars_amount:]))
+            x = [prediction.argmax() for prediction in y]
+            predictions = np.array(x)
             predicted_letters = [classes[pred] for pred in predictions]
             print(predicted_letters)
             current_pred = classes[np.argmax(np.bincount(predictions))]
             print(current_pred)
 
+            prediction_value = np.amax(y) * 100
+
+            letters_stats_api = 'letters'
+            letters_payload = f'letter={current_pred}&value={prediction_value}'
+            response_letters = requests.post(f'{server_api}{letters_stats_api}', headers=headers, data=letters_payload)
+            print(response_letters.text)
+            
             images = []
 
             if current_pred == 'kafyad':
@@ -163,13 +212,21 @@ def main():
                 else:
                     password_matched = try_unlock(unlock_letters)
 
+                    dates_stats_api = 'unlockDates'
+                    date = datetime.today().strftime('%d/%m/%Y')
+                    is_pass_mached = False
+
                     if password_matched:
                         print('Unlocked successfuly!')
-                        if not unlock_thread.is_alive():
-                            unlock_thread.start()
-
+                        is_pass_mached = True
+                        openLock()
                     else:
                         print('Failed to unlock!')
+
+                    
+                    payload_dates = f'date={date}&isUnlocked={is_pass_mached}'
+                    response_dates = requests.post(f'{server_api}{dates_stats_api}', headers=headers, data=payload_dates)
+                    print(response_dates.text)
 
                     unlock_letters = []
                     is_unlocking = False
